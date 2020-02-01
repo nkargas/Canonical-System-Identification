@@ -48,4 +48,4 @@ for n_s = 1:n_sim
     rmse_test(1, n_s)
 end
 
-fprintf('CPD : %.2f, %.2f \n',mean(rmse_test(1,1:4)), std(rmse_test(1,1:4)));
+fprintf('CPD : %.2f, %.2f \n',mean(rmse_test(1,:)), std(rmse_test(1,:)));
