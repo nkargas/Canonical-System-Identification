@@ -1,4 +1,4 @@
-# Canonical-System-Identification
+# Nonlinear System Identification via Tensor Completion
 
 Demo code for the paper:
 
