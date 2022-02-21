@@ -39,7 +39,7 @@ T = cell(N, 1);
 T_T = cell(N, 1);
 for n = 1:N
     if f_type(n) == 0
-        T{n} = toeplitz([1; zeros(I(n)-2, 1)] , [1 -1 zeros(1, I(n)-2)]); 
+        T{n} = toeplitz([1; zeros(I(n)-2, 1)] , [1 -1 zeros(1, I(n)-2)]);
         %T{n} = toeplitz([1; zeros(I(n)-3, 1)] , [1 -2 1 zeros(1, I(n)-3)]);
     else
         T{n} = zeros(1, I(n));
@@ -71,26 +71,26 @@ while(1)
     for n=1:N
         for i = 1:I(n)
             [y, U] = get_y_U(Y, X, F, n, i, b);
-            X.U{n}(i, :) = (1/s_tr * (U'*U) + mu*eye(F) + mu_sm*T_T{n}(i,i)*eye(F) )\(1/s_tr*U'*y - mu_sm*X.U{n}([1:i-1 i+1:end], :)'*T_T{n}(i, [1:i-1 i+1:end])');
+            X{n}(i, :) = (1/s_tr * (U'*U) + mu*eye(F) + mu_sm*T_T{n}(i,i)*eye(F) )\(1/s_tr*U'*y - mu_sm*X{n}([1:i-1 i+1:end], :)'*T_T{n}(i, [1:i-1 i+1:end])');
         end
     end
     if bias == true
         b = mean2(targets_tr - X_at(X, inputs_tr));
     end
-    
+
     % predictions
     [pred_tr] = X_at(X, inputs_tr) + b;
     [pred_vl] = X_at(X, inputs_vl) + b;
     [pred_te] = X_at(X, inputs_te) + b;
-    
+
     Out.rmse_tr(iter) = sqrt((1/(s_tr*n_outputs) * norm(pred_tr - targets_tr, 'fro')^2));
     Out.rmse_vl(iter) = sqrt((1/(s_vl*n_outputs) * norm(pred_vl - targets_vl, 'fro')^2));
     Out.rmse_te(iter) = sqrt((1/(s_te*n_outputs) * norm(pred_te - targets_te, 'fro')^2));
     Out.cost(iter) = compute_cost(Out.rmse_tr(iter)^2, N, X, T, mu, mu_sm);
-    
+
     if iter > 1
         rel = abs(Out.cost(iter) - Out.cost(iter-1))/abs(Out.cost(iter-1));
-        
+
         if mod(iter, printitn) == 0
             fprintf('Relative change : %d \n', rel);
             fprintf('RMSE train : %f \n', Out.rmse_tr(iter));
@@ -98,22 +98,22 @@ while(1)
             fprintf('RMSE test : %f \n', Out.rmse_te(iter));
             fprintf('Bias : %f \n', b);
         end
-        
+
         if Out.rmse_vl(iter) < best_rmse
             best_rmse = Out.rmse_vl(iter);
             best_rmse_test = Out.rmse_te(iter);
             Out.pred_te = pred_te;
-            
+
             best_X = X;
             best_b = b;
         end
-        
+
         if Out.rmse_vl(iter)>Out.rmse_vl(iter-1)
             cnt_rmse = cnt_rmse + 1;
         else
             cnt_rmse = 0;
         end
-        
+
         if iter == max_itr || rel < tol || cnt_rmse >= thresh
             fprintf('RMSE test : %f, RMSE valid : %f, Rank : %d mu : %f mu_sm : %f \n', best_rmse_test, best_rmse, F, mu, mu_sm);
             Out.cost(iter+1:end) = [];
@@ -134,8 +134,8 @@ end
 function er = compute_cost(mse, N, X, T, mu, mu_sm)
 er = 0;
 for n = 1:N
-    er = er + mu*norm(X.U{n}(:))^2;
-    er = er + mu_sm*norm(T{n}*X.U{n},'fro')^2;
+    er = er + mu*norm(X{n}(:))^2;
+    er = er + mu_sm*norm(T{n}*X{n},'fro')^2;
 end
 er = er +  mse;
 end

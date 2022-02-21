@@ -16,4 +16,4 @@ elseif strcmp(init,'uniform')
         A{n} = 0.5 + rand(I(n),F);
     end
 end
-X = ktensor(A);
+X = A;
